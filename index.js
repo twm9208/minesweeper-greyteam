@@ -82,9 +82,9 @@ function createTable() {
             td.id = cellID(i, j);
             row.appendChild(td);
             addCellListeners(td, i, j);
-            if (starter === true && adjacentBombs(i,j) == 0 ){//&& i > 1 && j > 1){
+            if (starter === true && adjacentBombs(i,j) == 0 && i > 1 && j > 1){
                 td.style.backgroundColor = 'green';
-                //starter = false;
+                starter = false;
             }
         }
         table.appendChild(row);

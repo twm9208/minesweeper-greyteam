@@ -41,7 +41,8 @@ function showBombs() {
         for (j = 0; j < components.num_of_cols; j++){
             cell = table.rows[i].cells[j]
             if (components.bombs[i][j]){
-                cell.textContent = components.bomb
+                cell.textContent = components.bomb;
+                cell.bomb = true;
             }
         }
     }
@@ -156,26 +157,46 @@ function addCellListeners(td, i, j) {
         components.mousewhiches = 0;
         
         if (event.which === 3) {
-           
-            if (this.clicked) {
-                return;
-            }
-            if (this.flagged) {
-                this.flagged = false;
-                components.num_of_flags -= 1;
-                document.getElementById("flags").innerHTML = JSON.stringify(components.num_of_flags);
-                this.textContent = '';
-            } else {
-                this.flagged = true;
-                components.num_of_flags += 1;
-                document.getElementById("flags").innerHTML = JSON.stringify(components.num_of_flags);
-                this.textContent = components.flag;
-            }
+            if (!placing){
+                if (this.clicked) {
+                    return;
+                }
+                if (this.flagged) {
+                    this.flagged = false;
+                    components.num_of_flags -= 1;
+                    document.getElementById("flags").innerHTML = JSON.stringify(components.num_of_flags);
+                    this.textContent = '';
+                } else {
+                    this.flagged = true;
+                    components.num_of_flags += 1;
+                    document.getElementById("flags").innerHTML = JSON.stringify(components.num_of_flags);
+                    this.textContent = components.flag;
+                }
 
-            event.preventDefault();
-            event.stopPropagation();
-          
-            return false;
+                event.preventDefault();
+                event.stopPropagation();
+            
+                return false;
+            } else {
+                if (this.bomb) {
+                    this.bomb = false;
+                    components.num_of_bombs -= 1;
+                    document.getElementById("bombs").innerHTML = JSON.stringify(components.num_of_bombs);
+                    components.bombs[i][j] = false;
+                    this.textContent = '';
+                } else {
+                    this.bomb = true;
+                    components.num_of_bombs += 1;
+                    document.getElementById("bombs").innerHTML = JSON.stringify(components.num_of_bombs);
+                    components.bombs[i][j] = true;
+                    this.textContent = components.bomb;
+                }
+
+                event.preventDefault();
+                event.stopPropagation();
+            
+                return false;
+            }
         } 
         else {
             if (!this.clicked && !this.flagged){

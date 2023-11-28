@@ -200,6 +200,7 @@ function addCellListeners(td, i, j) {
         } 
         else {
             if (!this.clicked && !this.flagged){
+                document.getElementById("placing-button").style.display="none";
                 handleCellClick(this, i, j);
             }
         }

@@ -33,9 +33,14 @@ function togglePlacing() {
     document.getElementById("placing").innerHTML = JSON.stringify(components.placing);
 }
 
-function showBombs() {
+function getTable() {
     var field = document.getElementById("field");
     var table = field.getElementsByTagName('table')[0];
+    return table;
+}
+
+function showBombs() {
+    var table = getTable();
 
     for (i = 0; i < components.num_of_rows; i++){
         for (j = 0; j < components.num_of_cols; j++){
@@ -48,9 +53,9 @@ function showBombs() {
     }
 }
 
+
 function hideBombs() {
-    var field = document.getElementById("field");
-    var table = field.getElementsByTagName('table')[0];
+    var table = getTable();
 
     for (i = 0; i < components.num_of_rows; i++){
         for (j = 0; j < components.num_of_cols; j++){
@@ -313,11 +318,18 @@ function reload(){
 }
 
 function saveState(){
-    // placeholder function to save the state of the game
+    const spawner = require('child_process').spawn;
+    const python_process = spawner('python', ['./writes.py',JSON.stringify(components.bombs)])
 }
 
 function loadState(){
-    // placeholder function to load the state of the game
+    const spawner = require('child_process').spawn;
+    const python_process = spawner('python', ['./reads.py'])
+    var output;
+    python_process.stdout.on('data', (data) => {
+        output = JSON.parse(data.toString())
+    });
+    componenets.bombs = output
 }
 
 window.addEventListener('load', function() {

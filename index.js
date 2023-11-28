@@ -22,9 +22,45 @@ function startGame() {
 }
 
 function togglePlacing() {
-    if (components.placing == true){components.placing = false} else {components.placing = true}
+    if (components.placing == true){
+        components.placing = false;
+        hideBombs();
+    } 
+    else {
+        components.placing = true;
+        showBombs();
+    }
     document.getElementById("placing").innerHTML = JSON.stringify(components.placing);
 }
+
+function showBombs() {
+    var field = document.getElementById("field");
+    var table = field.getElementsByTagName('table')[0];
+
+    for (i = 0; i < components.num_of_rows; i++){
+        for (j = 0; j < components.num_of_cols; j++){
+            cell = table.rows[i].cells[j]
+            if (components.bombs[i][j]){
+                cell.textContent = components.bomb
+            }
+        }
+    }
+}
+
+function hideBombs() {
+    var field = document.getElementById("field");
+    var table = field.getElementsByTagName('table')[0];
+
+    for (i = 0; i < components.num_of_rows; i++){
+        for (j = 0; j < components.num_of_cols; j++){
+            cell = table.rows[i].cells[j]
+            if (components.bombs[i][j] && cell.textContent != components.flag){
+                cell.textContent = ""
+            }
+        }
+    }
+}
+
 
 function placeBombs() {
     var i, j, rows = [];

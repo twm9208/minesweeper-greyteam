@@ -1,0 +1,48 @@
+---
+-  name: install Apache2
+   hosts: all
+   tasks:
+
+
+   - name: install Apache2
+     apt:
+       name:
+         - apache2
+         - apache2-doc
+         - apache2-utils
+       update_cache: yes
+       state: present
+     become: yes
+
+   - name: set hostname to minesweeper
+     hostname:
+       name: minesweeper
+     become: yes
+
+   - name: set apache page to minesweeper.prison.gang
+     lineinfile:
+       path: /etc/apache2/sites-available/000-default.conf
+       regexp: 'ServerName'
+       line: 'ServerName minesweeper.prison.gang'
+     become: yes
+     notify:
+       - restart apache2
+
+   - name: add entry to hosts file
+     lineinfile:
+       path: /etc/hosts
+       line: '{{ ansible_default_ipv4.address }} minesweeper.prison.gang'
+     become: yes
+
+   - name: copy html page from github
+     ansible.builtin.git:
+       repo: https://github.com/twm9208/minesweeper-greyteam.git
+       dest: /var/www/html/minesweeper
+       separate_git_dir: ./src/minesweeper-greyteam.git
+     become: yes
+
+   handlers:
+   - name: restart apache2
+     service:
+       name: apache2
+       state: restarted

@@ -1,5 +1,5 @@
 ---
--  name: install Apache2
+-  name: install Minesweeper
    hosts: all
    tasks:
 

@@ -1,25 +1,48 @@
 var components = {
-    num_of_rows : 12,
-    num_of_cols : 24,
-    num_of_bombs : 55,
+    num_of_rows : 10,
+    num_of_cols : 12,
+    num_of_bombs : 20,
+    num_of_flags : 0,
     bomb : '💣',
+    flag : '🚩',
     alive : true,
+    placing : false,
+    score : 0,
     colors : {1: 'blue', 2: 'green', 3: 'red', 4: 'purple', 5: 'maroon', 6: 'turquoise', 7: 'black', 8: 'grey'}
 }
 
 function startGame() {
     components.bombs = placeBombs();
     document.getElementById('field').appendChild(createTable());
+    // document.getElementById("score").innerHTML = "JSON.stringify(Math.ceil(components.score)) + "%"";
+    document.getElementById("score").innerHTML = "0/100"
+    document.getElementById("placing").innerHTML = JSON.stringify(components.placing);
+    document.getElementById("bombs").innerHTML = JSON.stringify(components.num_of_bombs);
+    document.getElementById("flags").innerHTML = JSON.stringify(components.num_of_flags);
+}
+
+function togglePlacing() {
+    if (components.placing == true){components.placing = false} else {components.placing = true}
+    document.getElementById("placing").innerHTML = JSON.stringify(components.placing);
 }
 
 function placeBombs() {
-    var i, rows = [];
+    var i, j, rows = [];
     
+    for (i=0; i<components.num_of_rows; i++) {
+        rows[i] = []
+        for (j=0; j<components.num_of_cols; j++){
+            rows[i][j] = false;
+        }
+    }
+
     for (i=0; i<components.num_of_bombs; i++) {
         placeSingleBomb(rows);
+
     }
     return rows;
 } 
+
 
 function placeSingleBomb(bombs) {
 
@@ -51,7 +74,7 @@ function cellID(i, j) {
 function createTable() {
     var table, row, td, i, j;
     table = document.createElement('table');
-    
+    var starter = true
     for (i=0; i<components.num_of_rows; i++) {
         row = document.createElement('tr');
         for (j=0; j<components.num_of_cols; j++) {
@@ -59,6 +82,10 @@ function createTable() {
             td.id = cellID(i, j);
             row.appendChild(td);
             addCellListeners(td, i, j);
+            if (starter === true && adjacentBombs(i,j) == 0 ){//&& i > 1 && j > 1){
+                td.style.backgroundColor = 'green';
+                //starter = false;
+            }
         }
         table.appendChild(row);
     }
@@ -77,7 +104,6 @@ function addCellListeners(td, i, j) {
         if (this.flagged) {
             return;
         }
-        this.style.backgroundColor = 'lightGrey';
     });
 
     td.addEventListener('mouseup', function(event) {
@@ -86,8 +112,9 @@ function addCellListeners(td, i, j) {
             return;
         }
 
-        if (this.clicked && components.mousewhiches == 4) {
+        if (this.clicked && components.mousewhiches == 2) {
             performMassClick(this, i, j);
+            return;
         }
 
         components.mousewhiches = 0;
@@ -99,9 +126,13 @@ function addCellListeners(td, i, j) {
             }
             if (this.flagged) {
                 this.flagged = false;
+                components.num_of_flags -= 1;
+                document.getElementById("flags").innerHTML = JSON.stringify(components.num_of_flags);
                 this.textContent = '';
             } else {
                 this.flagged = true;
+                components.num_of_flags += 1;
+                document.getElementById("flags").innerHTML = JSON.stringify(components.num_of_flags);
                 this.textContent = components.flag;
             }
 
@@ -111,7 +142,9 @@ function addCellListeners(td, i, j) {
             return false;
         } 
         else {
-            handleCellClick(this, i, j);
+            if (!this.clicked && !this.flagged){
+                handleCellClick(this, i, j);
+            }
         }
     });
 
@@ -122,10 +155,6 @@ function addCellListeners(td, i, j) {
 
 function handleCellClick(cell, i, j) {
     if (!components.alive) {
-        return;
-    }
-
-    if (cell.flagged) {
         return;
     }
 
@@ -140,6 +169,7 @@ function handleCellClick(cell, i, j) {
     else {
         cell.style.backgroundColor = 'lightGrey';
         num_of_bombs = adjacentBombs(i, j);
+        updateScore();
         if (num_of_bombs) {
             cell.style.color = components.colors[num_of_bombs];
             cell.textContent = num_of_bombs;
@@ -148,6 +178,18 @@ function handleCellClick(cell, i, j) {
             clickAdjacentBombs(i, j);
         }
     }
+}
+
+function updateScore(){
+    total_cells = components.num_of_cols*components.num_of_rows-components.num_of_bombs
+    components.score += 1;
+
+    strCells = JSON.stringify(total_cells);
+    strEmpty = JSON.stringify(components.score);
+
+
+    //document.getElementById("score").innerHTML = JSON.stringify(Math.ceil(100*components.score/total_cells)) + "%    (" + strEmpty + "/" + strCells + ")"
+    document.getElementById("score").innerHTML =strEmpty + "/" + strCells    
 }
 
 function adjacentBombs(row, col) {
@@ -209,6 +251,14 @@ function gameOver() {
 
 function reload(){
     window.location.reload();
+}
+
+function saveState(){
+    // placeholder function to save the state of the game
+}
+
+function loadState(){
+    // placeholder function to load the state of the game
 }
 
 window.addEventListener('load', function() {

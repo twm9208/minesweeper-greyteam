@@ -35,3 +35,9 @@ button {
     font-weight: bolder;
     border-radius: 20px 20px 20px 20px;
 }
+
+#save-load-buttons {
+    position:fixed;
+    bottom: 10px;
+    left: 10px;
+}

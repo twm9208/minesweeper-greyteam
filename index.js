@@ -287,6 +287,7 @@ function handleCellClick(cell, i, j) {
     if (components.bombs[i][j]) {
         cell.style.color = 'red';
         cell.textContent = components.bomb;
+        showBombs();
         gameOver();
         
     }

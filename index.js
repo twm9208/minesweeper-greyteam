@@ -21,6 +21,32 @@ function startGame() {
     document.getElementById("flags").innerHTML = JSON.stringify(components.num_of_flags);
 }
 
+function generateCode() {
+    var string = ""
+    for (i=0; i<components.num_of_rows; i++){
+        for (j=0; j<components.num_of_cols; j++){
+            var cell = components.bombs[i][j];
+            if (cell == true){
+                string += 1;
+            } else {
+                string += 0;
+            }
+        }
+    }
+    var code = encodeB64(string)
+    document.getElementById("code").innerHTML = JSON.stringify(code);
+}
+
+function encodeB64(binaryString) {
+    const binaryData = new Uint8Array(binaryString.length / 8);
+    for (i = 0; i < binaryString.length; i += 8) {
+        binaryData[i / 8] = parseInt(binaryString.substr(i, 8), 2);
+    }
+    const base64Data = btoa(String.fromCharCode.apply(null, binaryData));
+    const base64String = String(base64Data);
+    return base64String;
+}
+
 function togglePlacing() {
     if (components.placing == true){
         components.placing = false;
@@ -162,7 +188,7 @@ function addCellListeners(td, i, j) {
         components.mousewhiches = 0;
         
         if (event.which === 3) {
-            if (!placing){
+            if (components.placing == false){
                 if (this.clicked) {
                     return;
                 }
@@ -199,7 +225,7 @@ function addCellListeners(td, i, j) {
 
                 event.preventDefault();
                 event.stopPropagation();
-            
+                generateCode();
                 return false;
             }
         } 

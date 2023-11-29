@@ -12,13 +12,38 @@ var components = {
 }
 
 function startGame() {
-    components.bombs = placeBombs();
+    var code = window.prompt("Enter code or leave blank for random");
+    if (code == ""){
+        components.bombs = placeBombs();
+    } else {
+        components.bombs = loadCode(code);
+    }
     document.getElementById('field').appendChild(createTable());
     // document.getElementById("score").innerHTML = "JSON.stringify(Math.ceil(components.score)) + "%"";
     document.getElementById("score").innerHTML = "0/100"
     document.getElementById("placing").innerHTML = JSON.stringify(components.placing);
     document.getElementById("bombs").innerHTML = JSON.stringify(components.num_of_bombs);
     document.getElementById("flags").innerHTML = JSON.stringify(components.num_of_flags);
+}
+
+function loadCode(code) {
+    bombs = [];
+    count = 0;
+    index = 0;
+    binaryString = decodeB64(code);
+    for (i=0; i<components.num_of_rows; i++){
+        bombs[i] = []
+        for (j=0; j<components.num_of_cols; j++){
+            bombs[i][j] = false;
+            if (binaryString[index] == "1"){
+                bombs[i][j] = true;
+                count += 1;
+            } 
+            index += 1;
+        }
+    }
+    components.num_of_bombs = count;
+    return bombs;
 }
 
 function generateCode() {
@@ -35,6 +60,13 @@ function generateCode() {
     }
     var code = encodeB64(string)
     document.getElementById("code").innerHTML = JSON.stringify(code);
+}
+
+function decodeB64(base64String) {
+    const binaryData = atob(base64String).split('').map(char => char.charCodeAt(0));
+    const binaryString = binaryData.map(byte => byte.toString(2).padStart(8, '0')).join('');
+    return binaryString
+
 }
 
 function encodeB64(binaryString) {
@@ -341,21 +373,6 @@ function gameOver() {
 
 function reload(){
     window.location.reload();
-}
-
-function saveState(){
-    const spawner = require('child_process').spawn;
-    const python_process = spawner('python', ['./writes.py',JSON.stringify(components.bombs)])
-}
-
-function loadState(){
-    const spawner = require('child_process').spawn;
-    const python_process = spawner('python', ['./reads.py'])
-    var output;
-    python_process.stdout.on('data', (data) => {
-        output = JSON.parse(data.toString())
-    });
-    componenets.bombs = output
 }
 
 window.addEventListener('load', function() {

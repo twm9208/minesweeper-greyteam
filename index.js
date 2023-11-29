@@ -264,7 +264,9 @@ function addCellListeners(td, i, j) {
         else {
             if (!this.clicked && !this.flagged){
                 document.getElementById("placing-button").style.display="none";
-                hideBombs();
+                if (components.placing){
+                    togglePlacing();
+                }
                 handleCellClick(this, i, j);
             }
         }

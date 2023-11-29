@@ -1,7 +1,7 @@
 var components = {
-    num_of_rows : 10,
-    num_of_cols : 12,
-    num_of_bombs : 20,
+    num_of_rows : 12,
+    num_of_cols : 20,
+    num_of_bombs : 40,
     num_of_flags : 0,
     bomb : '💣',
     flag : '🚩',
